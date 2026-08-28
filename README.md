@@ -1,7 +1,8 @@
-# Compétence SEO + GEO — Web En Direct
+# Agent SEO + GEO — Web En Direct
 
 Une compétence Claude Code qui transforme Claude en agent SEO et GEO opérationnel : il
-audite le projet, corrige ce qui est sûr, valide, puis produit un rapport chiffré.
+détecte les outils dont il dispose, audite le projet, corrige ce qui est sûr, teste, refait
+les vérifications critiques, puis produit un rapport chiffré et justifié.
 
 GEO signifie *Generative Engine Optimization* : rendre le contenu compréhensible et
 citable par les moteurs de recherche IA (ChatGPT Search, Copilot, aperçus génératifs),
@@ -9,26 +10,32 @@ sans jamais chercher à les manipuler.
 
 ## Ce qu'elle fait
 
-- Inspecte le projet réel (framework, routes, metadata, sitemap, robots, JSON-LD) avant
-  toute modification.
-- Audite le SEO technique, le contenu, le GEO, la performance, l'accessibilité et le SEO local.
-- Applique directement les corrections sûres et réversibles ; demande confirmation pour le reste.
-- Vérifie que rien n'a cassé : build, lint, typecheck, tests, sitemap, JSON-LD, robots.
-- Rend un rapport avec six scores sur 100, la liste des fichiers modifiés, les problèmes
-  restants et les actions à faire à la main.
+- **Détecte les outils réellement disponibles** avant de commencer, et ne prétend jamais
+  avoir utilisé un outil auquel elle n'a pas accès.
+- Inspecte le projet réel (framework, routes, metadata, sitemap, robots, JSON-LD) et le site
+  en ligne, sans supposer que les deux correspondent.
+- Audite le SEO technique, le contenu, le GEO, la performance, l'accessibilité, le SEO local
+  et l'indexation.
+- Mesure avec Google Search Console quand la clé est en place, sinon le signale.
+- Applique directement les corrections sûres et réversibles ; demande confirmation pour tout
+  ce qui peut casser le site, toucher une donnée métier ou partir en production.
+- Vérifie que rien n'a cassé : `git diff`, build, lint, typecheck, tests, sitemap, JSON-LD,
+  robots — puis refait les audits critiques et compare avant/après.
+- Rend un rapport en dix parties : résumé, sept scores sur 100, corrections, fichiers
+  modifiés, résultats outil par outil, problèmes restants classés par gravité, actions
+  humaines, opportunités SEO, opportunités GEO, et les dix actions au meilleur ratio
+  impact/effort.
 
 ## Installation
 
-Copier le dossier dans les compétences de Claude Code :
-
 ```bash
-git clone https://github.com/webendirect/seo-geo-skill.git ~/.claude/skills/seo-geo
+git clone https://github.com/webendirect/seo-geo-agent-skill.git ~/.claude/skills/seo-geo-agent
 ```
 
-Sur Windows, la destination est `C:\Users\<vous>\.claude\skills\seo-geo`.
+Sur Windows, la destination est `C:\Users\<vous>\.claude\skills\seo-geo-agent`.
 
-Pour ne l'activer que sur un projet précis, copier le dossier dans `.claude/skills/seo-geo`
-à la racine de ce projet.
+Pour ne l'activer que sur un projet précis, cloner dans `.claude/skills/seo-geo-agent` à la
+racine de ce projet.
 
 ## Utilisation
 
@@ -42,42 +49,59 @@ Une fois installée, elle se déclenche d'elle-même sur une demande du type :
 Ou explicitement :
 
 ```
-/seo-geo
+/seo-geo-agent
 ```
+
+Elle ne demande pas quoi vérifier : elle audite, analyse, corrige, teste, puis rapporte.
 
 ## Structure
 
 | Fichier | Contenu |
 | --- | --- |
-| `SKILL.md` | Identité, philosophie, workflow, crawlers IA, anti-spam, rapport final |
+| `SKILL.md` | Identité, philosophie, mode automatique, priorisation, crawlers IA, anti-spam, rapport final, commande de lancement |
+| `references/procedure-audit.md` | Comment procéder : détection des outils, terminal, Git, audit du code, site en live, Lighthouse, PageSpeed, Schema, content gap, maillage, validation, second audit |
 | `references/audit-technique.md` | SEO technique, robots.txt, sitemap, architecture, images, performance, accessibilité |
 | `references/contenu-et-geo.md` | Intention, keywords, title, meta, headings, GEO, entités, Schema.org, local, E-E-A-T |
 | `references/mesure-et-outils.md` | Bing AI Performance, IndexNow, Search Console, Analytics |
-| `references/search-console.md` | Procedure de branchement de Google Search Console, commandes, depannage |
-| `tools/gsc.mjs` | Pont Search Console en Node, sans dependance npm |
+| `references/search-console.md` | Procédure de branchement de Search Console, commandes, dépannage |
+| `tools/gsc.mjs` | Pont Search Console en Node, sans dépendance npm |
+
+`SKILL.md` porte la doctrine et le workflow ; `procedure-audit.md` porte l'exécution. Les
+deux se lisent ensemble.
 
 ## Mesurer avec Search Console
 
-Sans donnees reelles, l'agent ne fait que deduire. Le pont `tools/gsc.mjs` lui donne acces
-aux requetes, aux pages, au CTR, aux positions et a l'etat d'indexation reels.
+Sans données réelles, l'agent ne fait que déduire. Le pont `tools/gsc.mjs` lui donne accès
+aux requêtes, aux pages, au CTR, aux positions et à l'état d'indexation réels.
 
 Branchement en une fois, environ dix minutes : voir
 [references/search-console.md](references/search-console.md).
 
-Verification :
+Vérification :
 
 ```bash
 node tools/gsc.mjs sites
 ```
 
-Tant que la cle n'est pas en place, le script repond `OUTIL NON DISPONIBLE` et l'agent
+Tant que la clé n'est pas en place, le script répond `OUTIL NON DISPONIBLE` et l'agent
 poursuit l'audit sans inventer de chiffres.
+
+## Règle anti-hallucination
+
+Chaque constat du rapport est étiqueté `MESURÉ` / `DÉDUIT` / `NON DISPONIBLE` / `À VÉRIFIER`.
+
+Une déduction n'est jamais présentée comme une mesure, un outil non exécuté n'est jamais
+présenté comme exécuté, et un résultat Search Console, Bing, Lighthouse ou PageSpeed n'est
+jamais inventé.
 
 ## Principes non négociables
 
 La compétence refuse par construction : le bourrage de mots-clés, le contenu de masse, les
 pages locales clonées, les faux avis, les faux backlinks, les fausses certifications, le
 texte caché et la manipulation des données structurées.
+
+Côté Git, elle n'exécute jamais `git reset --hard`, ne supprime ni branche ni fichier
+important, et ne pousse jamais en production sans autorisation explicite.
 
 Elle ne promet jamais « première position Google » ni « citation garantie dans ChatGPT ».
 L'objectif est une augmentation durable de l'éligibilité, de la compréhension et de la

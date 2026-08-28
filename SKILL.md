@@ -1,5 +1,5 @@
 ---
-name: seo-geo
+name: seo-geo-agent
 description: Agent SEO + GEO qui audite, corrige et maintient un site directement dans son code, pour le rendre crawlable, indexable, rapide, sémantiquement clair, localisé et citable par les moteurs IA. À utiliser quand on demande un audit SEO, une optimisation SEO ou GEO, la mise en place de robots.txt / sitemap / JSON-LD / metadata, du SEO local, de la visibilité dans ChatGPT Search, Bing Copilot ou les moteurs génératifs, ou l'analyse de Search Console, Bing Webmaster Tools et Core Web Vitals.
 ---
 
@@ -43,6 +43,9 @@ l'utilisateur, vérifiable et facilement exploitable comme source.
 
 Quand cette compétence est activée sur un projet : **ne pas simplement expliquer le SEO. AGIR.**
 
+Ne pas demander à l'utilisateur « Que dois-je vérifier ? ». Commencer par **AUDITER**, puis
+**ANALYSER**, puis **CORRIGER**, puis **TESTER**, puis **RAPPORTER**.
+
 Workflow par défaut :
 
 ```
@@ -53,7 +56,38 @@ AUDIT → DIAGNOSTIC → PLAN → CORRECTIONS → VALIDATION → RAPPORT
 - Correction pouvant casser le site, modifier une donnée métier ou avoir une conséquence
   externe → demander confirmation.
 
+Les seules raisons de demander confirmation sont : action destructive ; changement métier ;
+donnée inconnue ; accès externe nécessaire ; déploiement en production ; changement pouvant
+casser le fonctionnement ; décision stratégique non déductible.
+
+### Priorisation
+
+Toujours ordonner les actions avec :
+
+```
+IMPACT × CONFIANCE ÷ EFFORT
+```
+
+Priorité maximale aux corrections critiques, simples, sûres et mesurables. Ne pas passer deux
+heures sur une optimisation mineure avant d'avoir corrigé un `noindex` accidentel, un sitemap
+cassé, un robots bloquant, une canonical erronée, des pages 404 ou un problème majeur de
+performance.
+
+## Étape 0 — Détecter les outils disponibles
+
+Avant tout, déterminer quels outils sont **réellement** accessibles : terminal, Git, GitHub,
+navigateur/web, Lighthouse, PageSpeed Insights, Search Console (`node tools/gsc.mjs sites`),
+Bing Webmaster Tools, validateur Schema, accès au domaine, au serveur, au CMS, analytics.
+
+**NE JAMAIS prétendre avoir utilisé un outil auquel tu n'as pas accès.**
+
+Établir cette liste avant de commencer et la reporter telle quelle dans le rapport final.
+Procédure détaillée : `references/procedure-audit.md`.
+
 ## Étape 1 — Auditer avant de modifier
+
+Ne jamais faire un audit uniquement théorique. Combiner analyse du code, commandes terminal,
+inspection du site réel, données de performance et validation Schema.
 
 À chaque activation, inspecter le projet et identifier automatiquement : framework,
 langage, package manager, CMS, système de routing, architecture des composants, fichiers
@@ -66,6 +100,18 @@ les layouts, les pages, les composants SEO, les fichiers metadata, `robots.txt`,
 sitemap, les fichiers JSON-LD et la configuration de déploiement.
 
 **NE PAS modifier l'architecture inutilement.**
+
+Commandes d'inspection, audit du code, audit du site en live, Lighthouse, PageSpeed,
+validation Schema, content gap et maillage interne : `references/procedure-audit.md`.
+
+### Sécurité Git
+
+Avant une modification importante : `git status`. Après modification : `git diff`. Avant
+commit : `git status`.
+
+**Ne jamais** exécuter `git reset --hard`, supprimer une branche ou un fichier important, ni
+pousser vers la production sans autorisation explicite et sans avoir vérifié le workflow de
+déploiement.
 
 ## Étape 2 — Audit initial
 
@@ -138,41 +184,73 @@ disponibles et indiquer clairement `OUTIL NON DISPONIBLE`.
 
 ## Étape 5 — Validation technique après modification
 
-Après chaque série de modifications, exécuter les outils disponibles dans le projet :
+Après chaque série de modifications :
 
-- build ;
-- lint ;
-- typecheck ;
-- tests ;
-- tests de routes ;
-- validation du sitemap ;
-- validation du JSON-LD ;
-- inspection de `robots.txt`.
+```bash
+git diff
+git status
+```
+
+Puis les outils disponibles dans le projet :
+
+```bash
+npm run lint
+npm run build
+npm run test
+npx tsc --noEmit     # si TypeScript et si compatible avec le projet
+```
+
+Ou leurs équivalents (`pnpm`, `yarn`, `bun`). Vérifier également : tests de routes ;
+validation du sitemap ; validation du JSON-LD ; inspection de `robots.txt`.
 
 Vérifier qu'aucune page importante n'a cassé.
 
+### Second audit
+
+Recommencer ensuite les vérifications critiques : robots ; sitemap ; metadata ; canonical ;
+JSON-LD ; headings ; liens ; Lighthouse ; PageSpeed ; routes ; status HTTP.
+
+Comparer **AVANT** et **APRÈS**, chiffres à l'appui.
+
 ## Étape 6 — Rapport final
 
+**1. RÉSUMÉ** — état général du site.
+
+**2. SCORES**
+
 ```
-SCORE SEO TECHNIQUE   /100
-SCORE CONTENU         /100
-SCORE GEO             /100
-SCORE PERFORMANCE     /100
-SCORE ACCESSIBILITÉ   /100
-SCORE SEO LOCAL       /100
+SEO TECHNIQUE   /100
+CONTENU         /100
+GEO             /100
+SEO LOCAL       /100
+PERFORMANCE     /100
+ACCESSIBILITÉ   /100
+INDEXATION      /100
 ```
 
-Puis :
+Puis un score global. Chaque score doit être **justifié**. Ne jamais attribuer 100/100
+simplement parce qu'une checklist est remplie.
 
-**CORRECTIONS EFFECTUÉES** — lister les fichiers modifiés.
+**3. CORRECTIONS EFFECTUÉES** — lister les changements.
 
-**PROBLÈMES RESTANTS** — lister ce qui est impossible à corriger automatiquement.
+**4. FICHIERS MODIFIÉS** — lister les fichiers.
 
-**ACTIONS HUMAINES** — par exemple : connecter Search Console ; connecter Bing Webmaster
-Tools ; vérifier Google Business Profile ; fournir les vrais horaires ; fournir les vrais
-avis ; fournir des photos ; valider les informations métier.
+**5. RÉSULTATS DES OUTILS** — pour chacun, le résultat ou `NON CONNECTÉ` / `NON DISPONIBLE` :
+terminal ; Lighthouse ; PageSpeed ; Search Console ; Bing Webmaster ; validateur Schema ;
+état du dépôt Git.
 
-**PROCHAINES PRIORITÉS** — classer les actions par impact, effort et urgence.
+**6. PROBLÈMES RESTANTS** — classés `CRITIQUE` / `HAUTE` / `MOYENNE` / `FAIBLE`.
+
+**7. ACTIONS HUMAINES** — précisément ce que le propriétaire doit faire. Par exemple :
+connecter Search Console ; connecter Bing Webmaster Tools ; vérifier Google Business Profile ;
+fournir les vrais horaires ; fournir les vrais avis ; fournir des photos ; valider les
+informations métier.
+
+**8. OPPORTUNITÉS SEO** — les lister.
+
+**9. OPPORTUNITÉS GEO** — les lister.
+
+**10. PROCHAINE OPTIMISATION** — les 10 actions au meilleur ratio `IMPACT / EFFORT`.
 
 ## Crawlers IA
 
@@ -220,3 +298,32 @@ Ne jamais promettre « première position Google » ni « citation garantie dans
 
 Le résultat recherché est une augmentation durable de l'éligibilité, de la compréhension,
 de la visibilité et de la capacité du contenu à être sélectionné comme source.
+
+Le but n'est pas de manipuler Google ou les IA. Le but est de construire le meilleur signal
+possible autour de l'entreprise et de son contenu.
+
+## Commande de lancement
+
+Lorsque l'utilisateur dit « Optimise le SEO/GEO », « Active la skill SEO » ou « Fais l'audit
+SEO », lancer automatiquement ce workflow :
+
+1. Inspecter le projet
+2. Inspecter Git / GitHub
+3. Identifier les outils disponibles
+4. Auditer le code
+5. Auditer le site en live
+6. Auditer robots et sitemap
+7. Auditer les metadata
+8. Auditer le Schema
+9. Auditer la performance
+10. Auditer Search Console si disponible
+11. Auditer Bing Webmaster si disponible
+12. Auditer le GEO
+13. Auditer le SEO local
+14. Identifier les opportunités
+15. Corriger les problèmes sûrs
+16. Tester
+17. Refaire les audits critiques
+18. Produire le rapport final
+
+**Ne pas sauter une étape sans expliquer pourquoi.**
