@@ -1,2 +1,7 @@
 .DS_Store
 Thumbs.db
+
+# Cles de compte de service — ne jamais commiter
+*service-account*.json
+gsc-*.json
+*.pem

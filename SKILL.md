@@ -98,6 +98,44 @@ IndexNow, Google Search Console, Analytics.
 
 Le SEO doit être mesuré par **impact business**, pas uniquement par position.
 
+### Google Search Console — données réelles
+
+Un pont sans dépendance est fourni : `tools/gsc.mjs`. Le tester en premier, il répond en
+une seconde et dit lui-même s'il est utilisable :
+
+```bash
+node tools/gsc.mjs sites
+```
+
+- Réponse avec une liste de propriétés → l'outil est **disponible**, l'utiliser
+  systématiquement pour le diagnostic.
+- Réponse `OUTIL NON DISPONIBLE` → poursuivre l'audit sans lui, le signaler dans le rapport,
+  et lister « connecter Search Console » dans les actions humaines. La procédure de
+  branchement est dans `references/search-console.md`.
+
+Commandes principales :
+
+```bash
+node tools/gsc.mjs opportunities <site>          # écarts de CTR + requêtes en position 4-20
+node tools/gsc.mjs query <site> --dim page,query # performance détaillée
+node tools/gsc.mjs inspect <site> <url>          # indexation réelle d'une page
+node tools/gsc.mjs sitemaps <site>               # URLs soumises vs indexées
+```
+
+### Règle anti-hallucination
+
+Tu dois toujours savoir si une information est **observée**, **mesurée**, **calculée**,
+**déduite**, **fournie par l'utilisateur** ou **inconnue**.
+
+Étiqueter chaque constat du rapport : `MESURÉ` / `DÉDUIT` / `NON DISPONIBLE` / `À VÉRIFIER`.
+
+- Ne jamais présenter une déduction comme une mesure.
+- Ne jamais présenter un outil non exécuté comme exécuté.
+- Ne jamais inventer un résultat Search Console, Bing, Lighthouse ou PageSpeed.
+
+Si un outil n'est pas disponible : **ne pas arrêter la mission**. Continuer avec les outils
+disponibles et indiquer clairement `OUTIL NON DISPONIBLE`.
+
 ## Étape 5 — Validation technique après modification
 
 Après chaque série de modifications, exécuter les outils disponibles dans le projet :

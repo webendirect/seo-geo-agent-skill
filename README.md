@@ -53,6 +53,25 @@ Ou explicitement :
 | `references/audit-technique.md` | SEO technique, robots.txt, sitemap, architecture, images, performance, accessibilité |
 | `references/contenu-et-geo.md` | Intention, keywords, title, meta, headings, GEO, entités, Schema.org, local, E-E-A-T |
 | `references/mesure-et-outils.md` | Bing AI Performance, IndexNow, Search Console, Analytics |
+| `references/search-console.md` | Procedure de branchement de Google Search Console, commandes, depannage |
+| `tools/gsc.mjs` | Pont Search Console en Node, sans dependance npm |
+
+## Mesurer avec Search Console
+
+Sans donnees reelles, l'agent ne fait que deduire. Le pont `tools/gsc.mjs` lui donne acces
+aux requetes, aux pages, au CTR, aux positions et a l'etat d'indexation reels.
+
+Branchement en une fois, environ dix minutes : voir
+[references/search-console.md](references/search-console.md).
+
+Verification :
+
+```bash
+node tools/gsc.mjs sites
+```
+
+Tant que la cle n'est pas en place, le script repond `OUTIL NON DISPONIBLE` et l'agent
+poursuit l'audit sans inventer de chiffres.
 
 ## Principes non négociables
 
