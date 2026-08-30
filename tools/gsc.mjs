@@ -104,6 +104,17 @@ async function api(url, { method = 'GET', body } = {}) {
   if (!res.ok) {
     const msg = (data && data.error && data.error.message) || `HTTP ${res.status}`;
     if (res.status === 403) {
+      // Deux causes tres differentes se presentent toutes les deux en 403.
+      if (/has not been used|is disabled|SERVICE_DISABLED/i.test(msg)) {
+        const projet = (msg.match(/project (\d+)/) || [])[1];
+        fail(
+          "Acces refuse (403) : l'API Search Console n'est pas activee sur le projet Google Cloud.\n" +
+          (projet
+            ? `  Activer ici : https://console.cloud.google.com/apis/library/searchconsole.googleapis.com?project=${projet}\n`
+            : '  Activer depuis APIs & Services > Library > Google Search Console API.\n') +
+          '  Compter une a deux minutes de propagation, puis relancer.'
+        );
+      }
       fail(
         `Acces refuse (403) : ${msg}\n` +
         '  Le compte de service est-il bien ajoute comme utilisateur de la propriete\n' +

@@ -36,8 +36,16 @@ Déplacer le fichier téléchargé ici, sous ce nom exact :
 
 Sous Windows : `C:\Users\<vous>\.claude\gsc-service-account.json`
 
-Ce fichier est une clé privée. Il ne doit jamais être commité ni partagé. Le `.gitignore`
-de ce dépôt le bloque déjà par précaution.
+Ce fichier est une **clé privée**. Elle ne va jamais dans le dépôt : ni commitée, ni poussée
+sur GitHub — même sur un dépôt privé — ni collée dans une conversation, un ticket ou un
+message. Elle vit uniquement sur la machine qui fait tourner l'agent.
+
+Le `.gitignore` de ce dépôt bloque tous les `.json`, `.pem`, `.key` et `.env` par précaution,
+quel que soit leur nom.
+
+Si une clé a été exposée : la révoquer dans Google Cloud (**IAM et administration → Comptes de
+service → l'ouvrir → onglet Keys → supprimer**), puis en générer une nouvelle. Une clé révoquée
+ne sert plus à rien, même si quelqu'un la détient.
 
 Pour utiliser un autre emplacement, définir la variable `GSC_KEY_FILE`.
 

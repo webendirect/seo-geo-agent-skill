@@ -1,7 +1,15 @@
 .DS_Store
 Thumbs.db
 
-# Cles de compte de service — ne jamais commiter
-*service-account*.json
-gsc-*.json
+# ---------------------------------------------------------------------------
+# Cles et secrets — ne JAMAIS commiter, meme dans un depot prive.
+# Les cles de compte de service vivent dans ~/.claude/, pas ici.
+# ---------------------------------------------------------------------------
+*.json
+!package.json
+!package-lock.json
 *.pem
+*.key
+*.p12
+.env
+.env.*
