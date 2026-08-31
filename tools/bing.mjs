@@ -141,15 +141,26 @@ async function main() {
   }
 
   if (cmd === 'index') {
-    const rows = await api('GetUrlTrafficInfo', { siteUrl: site });
-    const crawl = await api('GetCrawlStats', { siteUrl: site }).catch(() => null);
+    // GetUrlTrafficInfo exige une URL precise ; pour une vue site entier ce sont
+    // GetCrawlStats et GetCrawlIssues qui repondent.
+    const crawl = await api('GetCrawlStats', { siteUrl: site });
+    const issues = await api('GetCrawlIssues', { siteUrl: site }).catch(() => []);
     console.log(`INDEXATION — ${site}\n`);
-    console.log(`  URLs connues : ${rows && rows.length ? rows.length : 0}`);
-    if (crawl && crawl.length) {
+
+    if (!crawl || !crawl.length) {
+      console.log('  Aucune statistique de crawl.');
+      console.log('  Sur une propriete recente, Bing met plusieurs jours a explorer le site.');
+    } else {
       const d = crawl[crawl.length - 1];
-      console.log(`  Dernier crawl : ${bingDate(d.Date)}`);
-      console.log(`     pages explorees ${num(d.CrawledPages)}   erreurs ${num(d.CrawlErrors)}   en 404 ${num(d.HttpCode404)}`);
+      console.log(`  Dernier releve : ${bingDate(d.Date)}`);
+      console.log(`     pages explorees ${num(d.CrawledPages)}   en index ${num(d.InIndex)}`);
+      console.log(`     erreurs ${num(d.CrawlErrors)}   en 404 ${num(d.HttpCode404)}`);
       console.log(`     bloquees par robots.txt ${num(d.BlockedByRobotsTxt)}`);
+    }
+
+    console.log(`\n  Problemes de crawl signales : ${issues && issues.length ? issues.length : 0}`);
+    for (const i of (issues || []).slice(0, 10)) {
+      console.log(`     ${i.Url || '?'} — ${i.Issues ?? i.IssueType ?? '?'}`);
     }
     return;
   }
