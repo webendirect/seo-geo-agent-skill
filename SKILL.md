@@ -168,6 +168,33 @@ node tools/gsc.mjs inspect <site> <url>          # indexation réelle d'une page
 node tools/gsc.mjs sitemaps <site>               # URLs soumises vs indexées
 ```
 
+### Bing Webmaster — citations IA
+
+Search Console ne mesure que Google. Pour la moitié GEO, utiliser `tools/bing.mjs` :
+
+```bash
+node tools/bing.mjs sites
+```
+
+- Réponse avec une liste → l'outil est **disponible**.
+- Réponse `OUTIL NON DISPONIBLE` → le signaler, poursuivre, et lister « connecter Bing
+  Webmaster Tools » dans les actions humaines. Branchement : `references/bing-webmaster.md`.
+
+```bash
+node tools/bing.mjs ai <site>        # ce que les moteurs IA citent deja
+node tools/bing.mjs keywords <site>  # requetes, impressions, positions
+node tools/bing.mjs index <site>     # crawl, erreurs, blocages
+```
+
+Croiser les deux sources :
+
+- cité par les IA mais mal classé → le contenu est extractible, le socle SEO est faible ;
+- bien classé mais jamais cité → le contenu est trouvable mais pas extractible, travailler
+  les passages autonomes, définitions, tableaux et FAQ ;
+- ni l'un ni l'autre sur un sujet stratégique → sujet à créer, pas à optimiser.
+
+**Ne jamais confondre une citation IA et une position Google.**
+
 ### Règle anti-hallucination
 
 Tu dois toujours savoir si une information est **observée**, **mesurée**, **calculée**,

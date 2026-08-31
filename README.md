@@ -64,7 +64,9 @@ Elle ne demande pas quoi vérifier : elle audite, analyse, corrige, teste, puis 
 | `references/contenu-et-geo.md` | Intention, keywords, title, meta, headings, GEO, entités, Schema.org, local, E-E-A-T |
 | `references/mesure-et-outils.md` | Bing AI Performance, IndexNow, Search Console, Analytics |
 | `references/search-console.md` | Procédure de branchement de Search Console, commandes, dépannage |
+| `references/bing-webmaster.md` | Procédure de branchement de Bing Webmaster, citations IA, IndexNow |
 | `tools/gsc.mjs` | Pont Search Console en Node, sans dépendance npm |
+| `tools/bing.mjs` | Pont Bing Webmaster en Node, sans dépendance npm |
 
 `SKILL.md` porte la doctrine et le workflow ; `procedure-audit.md` porte l'exécution. Les
 deux se lisent ensemble.
@@ -85,6 +87,19 @@ node tools/gsc.mjs sites
 
 Tant que la clé n'est pas en place, le script répond `OUTIL NON DISPONIBLE` et l'agent
 poursuit l'audit sans inventer de chiffres.
+
+## Mesurer les citations IA avec Bing
+
+Search Console ne mesure que Google. Le rapport **AI Performance** de Bing Webmaster est la
+seule source accessible sur ce que les moteurs génératifs citent réellement — et Bing importe
+les propriétés déjà vérifiées dans Search Console, sans revérification.
+
+```bash
+node tools/bing.mjs ai <site>
+```
+
+Branchement : [references/bing-webmaster.md](references/bing-webmaster.md). Plus simple que
+celui de Google — une clé d'API, pas de compte de service ni de projet cloud.
 
 ## Règle anti-hallucination
 
