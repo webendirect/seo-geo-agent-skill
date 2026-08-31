@@ -132,6 +132,54 @@ https://DOMAIN.TLD/sitemap.xml
 
 **Ne pas supposer que les fichiers locaux correspondent à la version réellement déployée.**
 
+### Le premier réflexe : lire ce que le robot reçoit
+
+Avant toute analyse fine, regarder le HTML brut servi par le serveur — pas la page rendue
+dans le navigateur.
+
+```bash
+curl -sS https://DOMAIN.TLD/ | grep -oiE "<title>[^<]*</title>|<html lang=\"[^\"]*\"|<meta[^>]+name=\"description\"[^>]*>"
+```
+
+Deux problèmes très fréquents apparaissent ici en dix secondes.
+
+**Les balises de gabarit non remplacées.** Les projets générés par un outil de scaffolding
+(emergent.sh, v0, Lovable, Bolt, Create React App) partent avec un titre et une description
+d'usine, et souvent `lang="en"`. S'ils n'ont jamais été modifiés, c'est **cela** que le moteur
+indexe, quel que soit le contenu réel de la page. Signes typiques :
+
+```
+<title>Emergent | Fullstack App</title>
+<meta name="description" content="A product of emergent.sh"/>
+<title>Create React App</title>
+<title>v0 App</title>
+```
+
+C'est un problème `CRITIQUE` et le correctif est trivial — donc toujours le premier de la
+liste selon `IMPACT × CONFIANCE ÷ EFFORT`.
+
+**Le contenu absent du HTML.** Si la réponse contient un conteneur vide
+(`<div id="root"></div>`, `<div id="app"></div>`) et un `<noscript>`, tout le contenu est
+construit par JavaScript. Google sait le faire, en seconde passe et sans garantie de délai ;
+beaucoup de crawlers, dont plusieurs moteurs IA, ne le font pas du tout.
+
+Vérifier alors ce que le visiteur voit réellement, en chargeant la page dans un navigateur :
+un site peut avoir un excellent contenu totalement invisible pour les robots. Le constat à
+formuler n'est pas « le site n'a pas de contenu » mais « le contenu n'est pas dans la réponse
+du serveur ».
+
+### Comment le serveur traite-t-il les absents ?
+
+```bash
+curl -sS -o /dev/null -w "%{http_code}\n" https://DOMAIN.TLD/fichier-qui-nexiste-pas
+```
+
+Un vrai `404` signifie que les fichiers statiques sont servis directement : déposer
+`robots.txt` et `sitemap.xml` suffira. Un `200` renvoyant du HTML signifie que l'application
+intercepte tout, et qu'il faudra les exclure dans la configuration du serveur.
+
+Détail complet dans `deploiement.md`.
+
 ## Phase 5 — Lighthouse
 
 Lorsque Lighthouse est disponible, lancer un audit sur mobile, et sur desktop lorsque
@@ -302,6 +350,31 @@ Schema Validator : NON DISPONIBLE
 ```
 
 Toujours distinguer : `MESURÉ` / `DÉDUIT` / `NON DISPONIBLE` / `À VÉRIFIER`.
+
+## Vérifier un constat avant de l'écrire
+
+Une recherche textuelle produit des faux positifs, et un faux positif dans un rapport d'audit
+coûte plus cher qu'un constat manquant : il envoie corriger ce qui fonctionne, et il entame
+la confiance dans tout le reste du rapport.
+
+Le cas classique : compter les `<img>` sans `alt` avec un `grep` ligne à ligne. En JSX, en
+Vue ou dans du HTML formaté, l'attribut est souvent sur la ligne suivante — la recherche
+signale des images conformes.
+
+```bash
+# Faux positifs garantis
+grep "<img" src/**/*.jsx | grep -vc "alt="
+
+# Ce qu'il faut faire : regarder les balises entieres
+grep -A4 "<img" src/**/*.jsx
+```
+
+Règle générale : **tout constat négatif issu d'une recherche textuelle est une hypothèse**,
+pas une mesure. La confirmer en lisant le code concerné, ou en interrogeant un vrai parseur
+(navigateur, analyseur JSON, validateur XML), avant de l'inscrire au rapport.
+
+Un constat qui s'effondre à la vérification doit disparaître du rapport — pas y figurer avec
+une réserve.
 
 ## Priorisation
 

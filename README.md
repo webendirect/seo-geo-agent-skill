@@ -65,6 +65,7 @@ Elle ne demande pas quoi vérifier : elle audite, analyse, corrige, teste, puis 
 | `references/mesure-et-outils.md` | Bing AI Performance, IndexNow, Search Console, Analytics |
 | `references/search-console.md` | Procédure de branchement de Search Console, commandes, dépannage |
 | `references/bing-webmaster.md` | Procédure de branchement de Bing Webmaster, citations IA, IndexNow |
+| `references/deploiement.md` | Mettre les correctifs en ligne : patch sans build, dépôt, vérification, déclaration du sitemap |
 | `tools/gsc.mjs` | Pont Search Console en Node, sans dépendance npm |
 | `tools/bing.mjs` | Pont Bing Webmaster en Node, sans dépendance npm |
 
@@ -100,6 +101,19 @@ node tools/bing.mjs ai <site>
 
 Branchement : [references/bing-webmaster.md](references/bing-webmaster.md). Plus simple que
 celui de Google — une clé d'API, pas de compte de service ni de projet cloud.
+
+## Mettre les correctifs en ligne
+
+Un correctif écrit mais non déployé ne vaut rien. Sur une application monopage, le HTML servi
+est un fichier construit : le fichier source n'est pas celui qui est en ligne, et reconstruire
+tout le projet pour trois balises `<meta>` est rarement possible.
+
+[references/deploiement.md](references/deploiement.md) décrit la méthode retenue : détecter
+comment le serveur traite les fichiers absents, patcher chirurgicalement le HTML réellement en
+ligne, vérifier que le corps et les scripts n'ont pas bougé, déposer, contrôler, puis déclarer
+le sitemap aux deux moteurs.
+
+La mise en production reste une action que l'agent **fait confirmer**, jamais une initiative.
 
 ## Règle anti-hallucination
 

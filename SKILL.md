@@ -104,6 +104,26 @@ sitemap, les fichiers JSON-LD et la configuration de déploiement.
 Commandes d'inspection, audit du code, audit du site en live, Lighthouse, PageSpeed,
 validation Schema, content gap et maillage interne : `references/procedure-audit.md`.
 
+### Le premier réflexe
+
+Avant toute analyse fine, lire le HTML **brut** servi par le serveur, pas la page rendue :
+
+```bash
+curl -sS https://DOMAIN.TLD/ | grep -oiE "<title>[^<]*</title>|<html lang=\"[^\"]*\""
+```
+
+Deux défauts très fréquents sautent aux yeux en dix secondes : un titre de gabarit jamais
+remplacé (`Emergent | Fullstack App`, `Create React App`, `v0 App`) et un conteneur vide
+signalant que tout le contenu est construit par JavaScript. Le premier est `CRITIQUE` pour un
+effort dérisoire, donc toujours en tête de la liste d'actions.
+
+### Vérifier un constat avant de l'écrire
+
+Un constat négatif issu d'une recherche textuelle est une **hypothèse**, pas une mesure. Le
+confirmer en lisant le code, ou avec un vrai parseur, avant de l'inscrire au rapport. Un faux
+positif coûte plus cher qu'un constat manquant : il fait corriger ce qui marche et discrédite
+le reste du rapport.
+
 ### Sécurité Git
 
 Avant une modification importante : `git status`. Après modification : `git diff`. Avant
@@ -232,12 +252,23 @@ validation du sitemap ; validation du JSON-LD ; inspection de `robots.txt`.
 
 Vérifier qu'aucune page importante n'a cassé.
 
+### Déploiement
+
+Un correctif écrit mais non déployé ne vaut rien — mais **mettre en production est une action
+à confirmer**, jamais une initiative.
+
+Sur une application monopage, le HTML en ligne est un fichier construit : le fichier source
+n'est pas celui qui est servi. Plutôt que de reconstruire tout le projet pour trois balises,
+patcher chirurgicalement le fichier réellement en ligne, puis vérifier que le corps et les
+scripts sont restés identiques. Procédure et contrôles : `references/deploiement.md`.
+
 ### Second audit
 
 Recommencer ensuite les vérifications critiques : robots ; sitemap ; metadata ; canonical ;
 JSON-LD ; headings ; liens ; Lighthouse ; PageSpeed ; routes ; status HTTP.
 
-Comparer **AVANT** et **APRÈS**, chiffres à l'appui.
+Comparer **AVANT** et **APRÈS**, chiffres à l'appui. Sans ce passage, on ne sait pas si le
+déploiement a fonctionné — on l'espère seulement.
 
 ## Étape 6 — Rapport final
 
