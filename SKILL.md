@@ -291,6 +291,12 @@ n'est pas celui qui est servi. Plutôt que de reconstruire tout le projet pour t
 patcher chirurgicalement le fichier réellement en ligne, puis vérifier que le corps et les
 scripts sont restés identiques. Procédure et contrôles : `references/deploiement.md`.
 
+**Le patch en ligne est un dépannage, jamais la correction.** Reporter systématiquement les
+mêmes changements dans les sources et les fusionner dans la branche principale : sinon le
+prochain build régénère le fichier et efface le correctif sans prévenir. Tant que la
+vérification sur la branche principale n'est pas passée, présenter le correctif comme
+temporaire dans le rapport.
+
 ### Second audit
 
 Recommencer ensuite les vérifications critiques : robots ; sitemap ; metadata ; canonical ;
@@ -329,7 +335,8 @@ terminal ; Lighthouse ; PageSpeed ; Search Console ; Bing Webmaster ; validateur
 **6. PROBLÈMES RESTANTS** — classés `CRITIQUE` / `HAUTE` / `MOYENNE` / `FAIBLE`.
 
 **7. ACTIONS HUMAINES** — précisément ce que le propriétaire doit faire. Par exemple :
-connecter Search Console ; connecter Bing Webmaster Tools ; vérifier Google Business Profile ;
+connecter Search Console ; connecter Bing Webmaster Tools ; **soumettre le sitemap aux deux
+moteurs**, que les ponts en lecture seule ne peuvent pas faire ; vérifier Google Business Profile ;
 fournir les vrais horaires ; fournir les vrais avis ; fournir des photos ; valider les
 informations métier.
 
