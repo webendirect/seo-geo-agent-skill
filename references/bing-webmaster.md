@@ -49,7 +49,7 @@ La variable d'environnement `BING_API_KEY` est prioritaire si elle est définie.
 ### 4. Vérifier
 
 ```bash
-node tools/bing.mjs sites
+node "$PONTS/bing.mjs" sites
 ```
 
 La propriété doit apparaître. Si c'est le cas, le branchement est terminé.
@@ -70,9 +70,9 @@ L'identifiant `<site>` est l'URL exacte affichée par `sites`, slash final compr
 ### Exemples
 
 ```bash
-node tools/bing.mjs ai https://exemple.com/
-node tools/bing.mjs keywords https://exemple.com/ --limit 50
-node tools/bing.mjs index https://exemple.com/
+node "$PONTS/bing.mjs" ai https://exemple.com/
+node "$PONTS/bing.mjs" keywords https://exemple.com/ --limit 50
+node "$PONTS/bing.mjs" index https://exemple.com/
 ```
 
 ## Ce que l'agent doit en faire

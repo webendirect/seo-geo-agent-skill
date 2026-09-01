@@ -73,10 +73,39 @@ heures sur une optimisation mineure avant d'avoir corrigé un `noindex` accident
 cassé, un robots bloquant, une canonical erronée, des pages 404 ou un problème majeur de
 performance.
 
+## Où sont les ponts
+
+Les scripts `gsc.mjs` et `bing.mjs` vivent dans le dossier `tools/` **de cette compétence**,
+pas dans le projet audité. Le répertoire courant pendant un audit est celui du projet : un
+chemin relatif comme `node "$PONTS/gsc.mjs"` échouera.
+
+Résoudre le chemin une fois, au début de la mission, et le réutiliser :
+
+```bash
+# Depuis n'importe quel repertoire
+PONTS=$(find "$HOME/.claude/skills" .claude/skills -name gsc.mjs -path "*/tools/*" 2>/dev/null | head -1 | xargs dirname)
+echo "$PONTS"
+```
+
+Sous PowerShell :
+
+```powershell
+$ponts = (Get-ChildItem "$HOME\.claude\skills", ".claude\skills" -Recurse -Filter gsc.mjs -ErrorAction SilentlyContinue | Select-Object -First 1).DirectoryName
+```
+
+Toutes les commandes de ce document s'écrivent ensuite `node "$PONTS/gsc.mjs" …`.
+
+Si `find` ne rend rien, la compétence est installée ailleurs : le dossier `tools/` est
+toujours à côté du `SKILL.md` en cours de lecture — utiliser ce chemin.
+
+**Prérequis** : Node.js 18 ou plus (pour `fetch` natif). Aucune dépendance npm.
+Vérifier avec `node --version`. Si Node est absent, les deux ponts sont
+`NON DISPONIBLE` — l'audit continue sans eux.
+
 ## Étape 0 — Détecter les outils disponibles
 
 Avant tout, déterminer quels outils sont **réellement** accessibles : terminal, Git, GitHub,
-navigateur/web, Lighthouse, PageSpeed Insights, Search Console (`node tools/gsc.mjs sites`),
+navigateur/web, Lighthouse, PageSpeed Insights, Search Console (`node "$PONTS/gsc.mjs" sites`),
 Bing Webmaster Tools, validateur Schema, accès au domaine, au serveur, au CMS, analytics.
 
 **NE JAMAIS prétendre avoir utilisé un outil auquel tu n'as pas accès.**
@@ -170,7 +199,7 @@ Un pont sans dépendance est fourni : `tools/gsc.mjs`. Le tester en premier, il 
 une seconde et dit lui-même s'il est utilisable :
 
 ```bash
-node tools/gsc.mjs sites
+node "$PONTS/gsc.mjs" sites
 ```
 
 - Réponse avec une liste de propriétés → l'outil est **disponible**, l'utiliser
@@ -182,10 +211,10 @@ node tools/gsc.mjs sites
 Commandes principales :
 
 ```bash
-node tools/gsc.mjs opportunities <site>          # écarts de CTR + requêtes en position 4-20
-node tools/gsc.mjs query <site> --dim page,query # performance détaillée
-node tools/gsc.mjs inspect <site> <url>          # indexation réelle d'une page
-node tools/gsc.mjs sitemaps <site>               # URLs soumises vs indexées
+node "$PONTS/gsc.mjs" opportunities <site>          # écarts de CTR + requêtes en position 4-20
+node "$PONTS/gsc.mjs" query <site> --dim page,query # performance détaillée
+node "$PONTS/gsc.mjs" inspect <site> <url>          # indexation réelle d'une page
+node "$PONTS/gsc.mjs" sitemaps <site>               # URLs soumises vs indexées
 ```
 
 ### Bing Webmaster — citations IA
@@ -193,7 +222,7 @@ node tools/gsc.mjs sitemaps <site>               # URLs soumises vs indexées
 Search Console ne mesure que Google. Pour la moitié GEO, utiliser `tools/bing.mjs` :
 
 ```bash
-node tools/bing.mjs sites
+node "$PONTS/bing.mjs" sites
 ```
 
 - Réponse avec une liste → l'outil est **disponible**.
@@ -201,9 +230,9 @@ node tools/bing.mjs sites
   Webmaster Tools » dans les actions humaines. Branchement : `references/bing-webmaster.md`.
 
 ```bash
-node tools/bing.mjs ai <site>        # ce que les moteurs IA citent deja
-node tools/bing.mjs keywords <site>  # requetes, impressions, positions
-node tools/bing.mjs index <site>     # crawl, erreurs, blocages
+node "$PONTS/bing.mjs" ai <site>        # ce que les moteurs IA citent deja
+node "$PONTS/bing.mjs" keywords <site>  # requetes, impressions, positions
+node "$PONTS/bing.mjs" index <site>     # crawl, erreurs, blocages
 ```
 
 Croiser les deux sources :

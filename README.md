@@ -26,6 +26,20 @@ sans jamais chercher à les manipuler.
   humaines, opportunités SEO, opportunités GEO, et les dix actions au meilleur ratio
   impact/effort.
 
+## Prérequis
+
+**Claude Code**, et **Node.js 18 ou plus** pour les deux ponts de mesure (`fetch` natif).
+Aucune dépendance npm à installer.
+
+```bash
+node --version
+```
+
+Si Node est absent, la compétence fonctionne quand même : elle signale les ponts comme
+`OUTIL NON DISPONIBLE` et mène l'audit avec les outils restants, sans inventer de chiffres.
+
+Les deux ponts sont facultatifs et se branchent indépendamment — voir plus bas.
+
 ## Installation
 
 ```bash
@@ -36,6 +50,18 @@ Sur Windows, la destination est `C:\Users\<vous>\.claude\skills\seo-geo-agent`.
 
 Pour ne l'activer que sur un projet précis, cloner dans `.claude/skills/seo-geo-agent` à la
 racine de ce projet.
+
+### Où sont les ponts
+
+Les scripts vivent dans le dossier `tools/` de la compétence, pas dans le projet audité.
+Comme le répertoire courant pendant un audit est celui du projet, les chemins relatifs ne
+fonctionnent pas. Résoudre une fois, puis réutiliser :
+
+```bash
+PONTS=$(find "$HOME/.claude/skills" .claude/skills -name gsc.mjs -path "*/tools/*" 2>/dev/null | head -1 | xargs dirname)
+```
+
+Toutes les commandes de la documentation s'écrivent `node "$PONTS/gsc.mjs" …`.
 
 ## Utilisation
 
@@ -83,7 +109,7 @@ Branchement en une fois, environ dix minutes : voir
 Vérification :
 
 ```bash
-node tools/gsc.mjs sites
+node "$PONTS/gsc.mjs" sites
 ```
 
 Tant que la clé n'est pas en place, le script répond `OUTIL NON DISPONIBLE` et l'agent
@@ -96,7 +122,7 @@ seule source accessible sur ce que les moteurs génératifs citent réellement �
 les propriétés déjà vérifiées dans Search Console, sans revérification.
 
 ```bash
-node tools/bing.mjs ai <site>
+node "$PONTS/bing.mjs" ai <site>
 ```
 
 Branchement : [references/bing-webmaster.md](references/bing-webmaster.md). Plus simple que
@@ -135,3 +161,8 @@ important, et ne pousse jamais en production sans autorisation explicite.
 Elle ne promet jamais « première position Google » ni « citation garantie dans ChatGPT ».
 L'objectif est une augmentation durable de l'éligibilité, de la compréhension et de la
 capacité du contenu à être sélectionné comme source.
+
+## Licence
+
+MIT — voir [LICENSE](LICENSE). Réutilisation, modification et redistribution libres, y
+compris en usage commercial, à condition de conserver la mention de copyright.

@@ -68,7 +68,7 @@ se limite aux performances et aux sitemaps.
 ### 4. Vérifier
 
 ```bash
-node tools/gsc.mjs sites
+node "$PONTS/gsc.mjs" sites
 ```
 
 La propriété doit apparaître dans la liste. Si c'est le cas, le branchement est terminé.
@@ -91,10 +91,10 @@ L'identifiant `<site>` est celui affiché par `sites`, à la lettre près :
 ### Exemples
 
 ```bash
-node tools/gsc.mjs opportunities sc-domain:exemple.com
-node tools/gsc.mjs query sc-domain:exemple.com --dim page,query --days 90 --limit 100
-node tools/gsc.mjs inspect sc-domain:exemple.com https://exemple.com/services
-node tools/gsc.mjs sitemaps sc-domain:exemple.com
+node "$PONTS/gsc.mjs" opportunities sc-domain:exemple.com
+node "$PONTS/gsc.mjs" query sc-domain:exemple.com --dim page,query --days 90 --limit 100
+node "$PONTS/gsc.mjs" inspect sc-domain:exemple.com https://exemple.com/services
+node "$PONTS/gsc.mjs" sitemaps sc-domain:exemple.com
 ```
 
 ## Ce que l'agent doit en faire

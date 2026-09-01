@@ -25,7 +25,7 @@ Chercher notamment :
 - navigateur / web ;
 - Lighthouse ;
 - PageSpeed Insights ;
-- Google Search Console (`node tools/gsc.mjs sites`) ;
+- Google Search Console (`node "$PONTS/gsc.mjs" sites`) ;
 - Bing Webmaster Tools ;
 - Schema.org / validator ;
 - accès au domaine ;
